@@ -20,7 +20,7 @@ const initDB = async () => {
             CREATE TABLE IF NOT EXISTS users(
             id SERIAL PRIMARY KEY,
             name VARCHAR(50),
-            email VARCHAR(100) NOT NULL,
+            email VARCHAR(100) UNIQUE NOT NULL,
             password VARCHAR(255) NOT NULL,
             role VARCHAR(20) DEFAULT 'Contributor' NOT NULL,
             created_at TIMESTAMP DEFAULT NOW(),
@@ -50,19 +50,21 @@ app.post('/', async (req: Request, res: Response) => {
         
         const result = await pool.query(
             `INSERT INTO users(name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *`,  
-            [name, email, password, role]
+            [name, email, password, role],
         );
-        
+        console.log(result);
         // 🌟 result.rows[0] contains the actual row saved by Postgres (including id, created_at, etc.)
         res.status(201).json({
-            message: "Created response",
-            data: result.rows[0] 
+            message: "created user successfully!",
+            data: result.rows[0],
+
         });
-   } catch (error) {
+   } catch (error: any) {
         console.error("Error creating user:", error);
         res.status(500).json({
-            message: "Failed to create user",
-            error: error instanceof Error ? error.message : "Unknown error"
+            message:error.message,
+            error:error,
+            //error: error instanceof Error ? error.message : "Unknown error"
         });
    }
 });
