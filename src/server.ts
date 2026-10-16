@@ -39,12 +39,13 @@ initDB();
 app.get('/', (req: Request, res: Response) => {
     //   res.send('DevPulse Server!');
     res.status(200).json({
+        success:true,
         "message": "DevPulse server",
         "author": "Rafee",
     });
 });
 
-app.post('/', async (req: Request, res: Response) => {
+app.post('/api/users', async (req: Request, res: Response) => {
     try {  
         const { name, email, password, role } = req.body;
         
@@ -55,6 +56,7 @@ app.post('/', async (req: Request, res: Response) => {
         console.log(result);
         // 🌟 result.rows[0] contains the actual row saved by Postgres (including id, created_at, etc.)
         res.status(201).json({
+            success:true,
             message: "created user successfully!",
             data: result.rows[0],
 
@@ -69,9 +71,32 @@ app.post('/', async (req: Request, res: Response) => {
    }
 });
 
+// get all users
+app.get('/api/users', async(req: Request, res: Response)=>{
+    try {
+        const result  = await pool.query(`SELECT * FROM users`);
+        res.status(200).json({
+            success:true,
+            message:"Users retrived successfully!",
+            data: result.rows,
+        })
+    } catch (error: any) {
+         res.status(500).json({
+            success:false,
+            error: error,
+        });
+        
+    }
+});
+
+// get single user
+app.get('/api/users', async(req: Request, res: Response)=>{
+
+});
+
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 });
+// 6.13 = 13.37
 
-// 7-6: 4.36
 
