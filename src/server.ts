@@ -129,28 +129,59 @@ app.get("/api/users/:id", async (req: Request, res: Response) => {
 app.put("/api/users/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-  const { name, password, role } = req.body;
-  // console.log(id, {name, password, role});
-  const result = await pool.query(
-    `
-    UPDATE users SET name=$1, password=$2, role=$3 WHERE id=$4 RETURNING *`,
-    [name, password, role, id]
-  );
-  if(result.rows.length === 0){
-     res.status(404).json({
+    const { name, password, role } = req.body;
+    // console.log(id, {name, password, role});
+    const result = await pool.query(
+      `
+    UPDATE users SET name=COALESCE($1, name) , password=COALESCE($2, password), role=COALESCE($3, role) WHERE id=$4 RETURNING *`,
+      [name, password, role, id]
+    );
+    if (result.rows.length === 0) {
+      res.status(404).json({
         success: false,
         message: "User not found!",
-        
       });
-  }
+    }
 
-  res.status(200).json({
-    success: true,
-    message: "User updated successfully!",
-    data: result.rows[0],
-  });
-  } catch (error:any) {
-     res.status(500).json({
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully!",
+      data: result.rows[0],
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      error: error,
+    });
+  }
+});
+
+// Delete user
+app.delete("/api/users/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      `
+      DELETE FROM users WHERE id=$1`,
+      [id]
+    );
+
+    if(result.rowCount === 0){
+      res.status(404).json({
+        success: false,
+        message: "User not found!",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User has been deleted successfully!",
+    });
+
+
+  } catch (error: any) {
+    res.status(500).json({
       success: false,
       message: error.message,
       error: error,
@@ -161,4 +192,3 @@ app.put("/api/users/:id", async (req: Request, res: Response) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
-// 7-8 = 4.28
