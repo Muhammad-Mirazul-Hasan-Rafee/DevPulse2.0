@@ -5,6 +5,7 @@ import express, {
 } from "express";
 import config from "./config";
 import { initDB, pool } from "./db";
+import { userRoute } from "./modules/user/user.route";
 const app: Application = express();
 
 // middleware
@@ -24,30 +25,9 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
-app.post("/api/users", async (req: Request, res: Response) => {
-  try {
-    const { name, email, password, role } = req.body;
+  
+ app.use('/api/users', userRoute);
 
-    const result = await pool.query(
-      `INSERT INTO users(name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *`,
-      [name, email, password, role]
-    );
-    console.log(result);
-    // 🌟 result.rows[0] contains the actual row saved by Postgres (including id, created_at, etc.)
-    res.status(201).json({
-      success: true,
-      message: "created user successfully!",
-      data: result.rows[0],
-    });
-  } catch (error: any) {
-    console.error("Error creating user:", error);
-    res.status(500).json({
-      message: error.message,
-      error: error,
-      //error: error instanceof Error ? error.message : "Unknown error"
-    });
-  }
-});
 
 // get all users
 app.get("/api/users", async (req: Request, res: Response) => {
