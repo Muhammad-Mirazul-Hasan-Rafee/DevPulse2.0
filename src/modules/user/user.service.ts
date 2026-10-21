@@ -1,6 +1,7 @@
 import { pool } from "../../db";
+import type { IUser } from "./user.interface";
 
-const createUserIntoDb = async (payload: any) => {
+const createUserIntoDb = async (payload: IUser) => {
     const { name, email, password, role } = payload;
     const result = await pool.query(
         `INSERT INTO users(name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *`,
@@ -10,3 +11,9 @@ const createUserIntoDb = async (payload: any) => {
 };
 
 export const userService = {createUserIntoDb};
+
+// 8-3 = done
+// user.route.ts
+// user.controller.ts
+// user.service.ts
+// user.interface.ts
