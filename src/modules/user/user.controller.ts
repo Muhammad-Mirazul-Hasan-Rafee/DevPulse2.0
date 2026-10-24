@@ -69,6 +69,63 @@ const getSingleUser = async (req: Request, res: Response) => {
       error: error,
     });
   }
-}
+};
+// update user
+const updatUser =  async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { name, password, role } = req.body;
+    // console.log(id, {name, password, role});
+const result = await userService.updateUserFromDb(name as string, password as string, role as string, id as string);
+    if (result.rows.length === 0) {
+      res.status(404).json({
+        success: false,
+        message: "User not found!",
+      });
+    }
 
-export const userController = {createUser, getAllUsers, getSingleUser};
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully!",
+      data: result.rows[0],
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      error: error,
+    });
+  }
+};
+
+// delete user
+const deleteUser = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+   const result = await userService.deleteUserFromDb(id as string);
+
+    if(result.rowCount === 0){
+      res.status(404).json({
+        success: false,
+        message: "User not found!",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User has been deleted successfully!",
+    });
+
+
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      error: error,
+    });
+  };
+
+}
+export const userController = {createUser, getAllUsers, getSingleUser, updatUser, deleteUser};
+
+

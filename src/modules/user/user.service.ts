@@ -26,7 +26,29 @@ const getSingleUserFromDb = async (id: string) => {
     return result;
 };
 
-export const userService = { createUserIntoDb, getAllusersFromDb, getSingleUserFromDb};
+// update user
+const updateUserFromDb = async(name: string, password: string, role:string, id:string)=>{
+    const result =  await pool.query(
+      `
+    UPDATE users SET name=COALESCE($1, name) , password=COALESCE($2, password), role=COALESCE($3, role) WHERE id=$4 RETURNING *`,
+      [name, password, role, id]
+    );
+    return result;
+};
+
+// delete user
+const deleteUserFromDb = async(id: string)=> {
+     const result = await pool.query(
+      `
+      DELETE FROM users WHERE id=$1`,
+      [id]
+    );
+    return result;
+};
+
+
+
+export const userService = { createUserIntoDb, getAllusersFromDb, getSingleUserFromDb, updateUserFromDb, deleteUserFromDb};
 
 // user.route.ts
 // user.controller.ts
