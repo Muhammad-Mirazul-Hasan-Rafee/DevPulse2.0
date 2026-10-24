@@ -23,4 +23,52 @@ const result = await userService.createUserIntoDb(req.body);
         });
     };
 };
-export const userController = {createUser};
+// get all users
+const getAllUsers = async (req: Request, res: Response) => {
+  try {
+   const result = await userService.getAllusersFromDb();
+    res.status(200).json({
+      success: true,
+      message: "Users retrived successfully!",
+      data: result.rows,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      error: error,
+    });
+  }
+};
+
+// get single user
+const getSingleUser = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  //console.log(id);
+
+  try {
+    const result = await userService.getSingleUserFromDb(id as string);
+
+    // if user not exists
+    if (result.rows.length === 0) {
+      res.status(404).json({
+        success: false,
+        message: "User not found!",
+        data: {},
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "User retrived successfully!",
+      data: result.rows,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      error: error,
+    });
+  }
+}
+
+export const userController = {createUser, getAllUsers, getSingleUser};

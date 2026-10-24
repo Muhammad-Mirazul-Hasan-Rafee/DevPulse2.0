@@ -10,9 +10,24 @@ const createUserIntoDb = async (payload: IUser) => {
     return result;
 };
 
-export const userService = {createUserIntoDb};
+// get all users
+const getAllusersFromDb = async () => {
+    const result = await pool.query(`SELECT * FROM users`);
+    return result;
+};
 
-// 8-3 = done
+// get single users
+const getSingleUserFromDb = async (id: string) => {
+    const result = await pool.query(
+        `
+            SELECT * FROM users WHERE id=$1
+            `, [id]
+    );
+    return result;
+};
+
+export const userService = { createUserIntoDb, getAllusersFromDb, getSingleUserFromDb};
+
 // user.route.ts
 // user.controller.ts
 // user.service.ts
