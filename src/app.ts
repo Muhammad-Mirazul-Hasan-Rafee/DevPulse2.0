@@ -28,8 +28,7 @@ app.get("/", (req: Request, res: Response) => {
   
  app.use('/api/users', userRoute);
 
-
-// Delete user
+app.use('/api/profile', )
 
 
 export default app;
@@ -40,3 +39,5 @@ export default app;
 // user.controller.ts
 // user.service.ts
 // user.interface.ts
+
+// 8.5 last mins
