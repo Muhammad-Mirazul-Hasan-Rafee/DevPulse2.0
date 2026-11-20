@@ -18,4 +18,3 @@ return result;
 
 export const profileService = {createProfileIntoDb};
 
-// 8.6 done
